@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 )
@@ -77,11 +78,20 @@ func main() {
 	check(err)
 
 	fmt.Println("Visiting " + basedir)
-	err = filepath.Walk(basedir, visit)
+	// err = filepath.Walk(basedir, visit)
+	err = filepath.WalkDir(basedir, visitDir)
 	check(err)
 }
 
 func visit(path string, info os.FileInfo, err error) error {
+	if err != nil {
+		return err
+	}
+	fmt.Println(" ", path, info.IsDir())
+	return nil
+}
+
+func visitDir(path string, info fs.DirEntry, err error) error {
 	if err != nil {
 		return err
 	}
