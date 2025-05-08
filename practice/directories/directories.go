@@ -70,7 +70,10 @@ func main() {
 	}
 
 	// err = os.Chdir("../../..")
-	err = os.Chdir(filepath.Join("..", filepath.Join("..", filepath.Join(".."))))
+	err = os.Chdir(
+		filepath.Join("..",
+			filepath.Join("..",
+				filepath.Join(".."))))
 	check(err)
 
 	fmt.Println("Visiting " + basedir)
