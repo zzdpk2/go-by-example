@@ -79,6 +79,7 @@ func main() {
 
 	fmt.Println("Visiting " + basedir)
 	// err = filepath.Walk(basedir, visit)
+	// WalkDir is better cos fs.DirEntry has fewer args and it has the lazy call
 	err = filepath.WalkDir(basedir, visitDir)
 	check(err)
 }
