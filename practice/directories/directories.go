@@ -23,40 +23,40 @@ func main() {
 	basedir := "subdir"
 	err := os.Mkdir(basedir, 0755)
 	check(err)
-	defer func(path string) {
-		if err := os.RemoveAll(path); err != nil {
+	defer func() {
+		if err := os.RemoveAll(basedir); err != nil {
 			panic(err)
 		}
-	}(basedir)
+	}()
 
 	createEmptyFile := func(name string) {
 		d := []byte("")
 		check(os.WriteFile(name, d, 0644))
 	}
 
-	createEmptyFile(basedir + "/file1")
-	err = os.MkdirAll(basedir+"/parent/child", 0755)
+	createEmptyFile(filepath.Join(basedir, "/file1"))
+	err = os.MkdirAll(filepath.Join(basedir, "/parent/child"), 0755)
 	check(err)
 
-	createEmptyFile(basedir + "/parent/file2")
-	createEmptyFile(basedir + "/parent/file3")
-	createEmptyFile(basedir + "/parent/child/file4")
+	createEmptyFile(filepath.Join(basedir, "/parent/file2"))
+	createEmptyFile(filepath.Join(basedir, "/parent/file3"))
+	createEmptyFile(filepath.Join(basedir, "/parent/child/file4"))
 
-	c, err := os.ReadDir(basedir + "/parent")
+	c, err := os.ReadDir(filepath.Join(basedir, "/parent"))
 	check(err)
 
-	fmt.Println("Listing " + basedir + "/parent")
+	fmt.Println("Listing " + filepath.Join(basedir, "/parent"))
 	for _, entry := range c {
 		fmt.Println(" ", entry.Name(), entry.IsDir())
 	}
 
-	err = os.Chdir(basedir + "/parent/child")
+	err = os.Chdir(filepath.Join(basedir, "/parent/child"))
 	check(err)
 
 	c, err = os.ReadDir(".")
 	check(err)
 
-	fmt.Println("Listing " + basedir + "/parent/child")
+	fmt.Println("Listing " + filepath.Join(basedir, "/parent/child"))
 	for _, entry := range c {
 		fmt.Println(" ", entry.Name(), entry.IsDir())
 	}
@@ -66,6 +66,7 @@ func main() {
 
 	fmt.Println("Visiting " + basedir)
 	err = filepath.Walk(basedir, visit)
+	check(err)
 }
 
 func visit(path string, info os.FileInfo, err error) error {
