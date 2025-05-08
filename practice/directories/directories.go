@@ -13,7 +13,6 @@ func check(e error) {
 }
 
 func main() {
-
 	defer func() {
 		if err := recover(); err != nil {
 			fmt.Println(err)
@@ -21,6 +20,9 @@ func main() {
 	}()
 
 	basedir := "subdir"
+	if err := os.RemoveAll(basedir); err != nil {
+		check(err)
+	}
 	err := os.Mkdir(basedir, 0755)
 	check(err)
 	defer func() {
@@ -50,7 +52,13 @@ func main() {
 		fmt.Println(" ", entry.Name(), entry.IsDir())
 	}
 
-	err = os.Chdir(filepath.Join(basedir, "/parent/child"))
+	err = os.Chdir(
+		filepath.Join(basedir,
+			filepath.Join("parent",
+				filepath.Join("child"))))
+	// err = os.Chdir(filepath.Dir(filepath.Dir(
+	// 	filepath.Dir(
+	// 		filepath.Join(basedir, "parent", "child")))))
 	check(err)
 
 	c, err = os.ReadDir(".")
@@ -61,7 +69,8 @@ func main() {
 		fmt.Println(" ", entry.Name(), entry.IsDir())
 	}
 
-	err = os.Chdir("../../..")
+	// err = os.Chdir("../../..")
+	err = os.Chdir(filepath.Join("..", filepath.Join("..", filepath.Join(".."))))
 	check(err)
 
 	fmt.Println("Visiting " + basedir)
